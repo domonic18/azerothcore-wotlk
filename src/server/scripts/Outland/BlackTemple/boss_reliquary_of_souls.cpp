@@ -141,10 +141,17 @@ public:
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (!who || me->getStandState() != UNIT_STAND_STATE_SLEEP || !who->IsPlayer() || me->GetDistance2d(who) > 90.0f || who->ToPlayer()->IsGameMaster())
+            if (!who || me->getStandState() != UNIT_STAND_STATE_SLEEP || !who->IsPlayer() || who->ToPlayer()->IsGameMaster())
                 return;
 
-            me->SetInCombatWithZone();
+            // 检查距离和高度差，确保玩家在同一平面
+            float distance = me->GetDistance(who);
+            float heightDiff = std::abs(me->GetPositionZ() - who->GetPositionZ());
+
+            if (distance > 90.0f || heightDiff > 10.0f)
+                return;
+
+            me->SetInCombatWith(who);
             me->SetStandState(UNIT_STAND_STATE_STAND);
 
             ScheduleUniqueTimedEvent(5s, [&] { // 15s
