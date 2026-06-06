@@ -1,0 +1,45 @@
+version: '3.8'
+
+# 部署专用 docker-compose
+# 使用外部 MySQL 数据库（测试/生产环境均已配置，无需初始化）
+#
+# 使用方法:
+#   测试环境: docker-compose --env-file .env.test -f docker-compose.deploy.yml up -d
+#   生产环境: docker-compose --env-file .env.prod -f docker-compose.deploy.yml up -d
+
+services:
+  ac-worldserver:
+    image: ${REGISTRY}/${NAMESPACE}/azerothcore-server:${TAG:-master}
+    container_name: ac-worldserver
+    restart: unless-stopped
+    volumes:
+      - ./data:/azerothcore/data
+      - ./configs:/azerothcore/env/dist/etc
+      - ./logs:/azerothcore/env/dist/logs
+    ports:
+      - "8085:8085"
+    environment:
+      - AC_DATA_DIR=/azerothcore/data
+      - AC_DB_HOST=${DB_HOST}
+      - AC_DB_PORT=${DB_PORT:-3306}
+      - AC_DB_USER=${DB_USER}
+      - AC_DB_PASSWORD=${DB_PASSWORD}
+    entrypoint: ["/bin/bash", "/azerothcore/docker-entrypoint.sh"]
+    command: ["./worldserver"]
+
+  ac-authserver:
+    image: ${REGISTRY}/${NAMESPACE}/azerothcore-server:${TAG:-master}
+    container_name: ac-authserver
+    restart: unless-stopped
+    volumes:
+      - ./configs:/azerothcore/env/dist/etc
+      - ./logs:/azerothcore/env/dist/logs
+    ports:
+      - "3724:3724"
+    environment:
+      - AC_DB_HOST=${DB_HOST}
+      - AC_DB_PORT=${DB_PORT:-3306}
+      - AC_DB_USER=${DB_USER}
+      - AC_DB_PASSWORD=${DB_PASSWORD}
+    entrypoint: ["/bin/bash", "/azerothcore/docker-entrypoint.sh"]
+    command: ["./authserver"]
