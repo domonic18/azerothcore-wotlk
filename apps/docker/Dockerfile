@@ -259,3 +259,29 @@ COPY --chown=$DOCKER_USER:$DOCKER_USER --from=build \
 
 COPY --chown=$DOCKER_USER:$DOCKER_USER --from=build \
   /azerothcore/env/dist/bin/vmap4_extractor /azerothcore/env/dist/bin/vmap4_extractor
+
+#################
+# Unified Server #
+#################
+
+FROM runtime AS server
+
+LABEL description="AzerothCore Unified Server (worldserver + authserver)"
+
+ENV ACORE_COMPONENT=worldserver
+
+COPY --chown=$DOCKER_USER:$DOCKER_USER \
+     --from=build \
+     /azerothcore/env/dist/bin/worldserver /azerothcore/env/dist/bin/worldserver
+
+COPY --chown=$DOCKER_USER:$DOCKER_USER \
+     --from=build \
+     /azerothcore/env/dist/bin/authserver /azerothcore/env/dist/bin/authserver
+
+COPY --chown=$DOCKER_USER:$DOCKER_USER \
+     --from=build \
+     /azerothcore/env/dist/bin/dbimport /azerothcore/env/dist/bin/dbimport
+
+USER $DOCKER_USER
+
+ENTRYPOINT ["/usr/bin/env", "bash", "/azerothcore/entrypoint.sh"]
