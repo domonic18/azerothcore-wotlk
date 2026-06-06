@@ -102,3 +102,6 @@ local.properties
 #  !modules/yourmodule
 #
 # ==================
+
+# Claude Code
+/.claude/
