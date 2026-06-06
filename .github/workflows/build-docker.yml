@@ -28,7 +28,7 @@ jobs:
             ["mod-costumes"]="https://github.com/domonic18/mod-costumes.git"
             ["mod-keep-out"]="https://github.com/domonic18/mod-keep-out.git"
             ["mod-multi-client-check"]="https://github.com/domonic18/mod-multi-client-check.git"
-            ["mod-progression-system"]="https://github.com/domonic18/mod-progression-system.git"
+            # ["mod-progression-system"]="https://github.com/domonic18/mod-progression-system.git"  # TODO: API incompatible with current core
             ["mod-server-auto-shutdown"]="https://github.com/domonic18/mod-server-auto-shutdown.git"
             ["mod-transmog"]="https://github.com/domonic18/mod-transmog.git"
             ["mod-war-effort"]="https://github.com/domonic18/mod-war-effort.git"
