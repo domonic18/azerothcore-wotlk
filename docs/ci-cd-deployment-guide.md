@@ -136,7 +136,6 @@ on:
 
 env:
   REGISTRY: ccr.ccs.tencentyun.com
-  NAMESPACE: your-namespace
   IMAGE_NAME: azerothcore-server
 
 jobs:
@@ -164,6 +163,7 @@ jobs:
             ["mod-war-effort"]="https://github.com/domonic18/mod-war-effort.git"
             ["mod-world-chat"]="https://github.com/domonic18/mod-world-chat.git"
             ["mod-zone-difficulty"]="https://github.com/domonic18/mod-zone-difficulty.git"
+            ["mod-chat-transmitter"]="https://github.com/domonic18/mod-chat-transmitter.git"
           )
           for name in "${!MODULES[@]}"; do
             branch="master"
@@ -184,8 +184,8 @@ jobs:
           file: ./apps/docker/Dockerfile
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
-            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ secrets.TCR_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+            ${{ env.REGISTRY }}/${{ secrets.TCR_NAMESPACE }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 ```
@@ -236,22 +236,20 @@ services:
 
 ### 7.2 环境变量文件
 
-**`.env.test`（Mac Mini 测试环境）**
+**`.env.example`**（复制为 `.env` 后使用）
 ```bash
-TAG=develop
-DB_HOST=192.168.1.100
-DB_PORT=3306
-DB_USER=acore
-DB_PASSWORD=your_test_password
-```
+# 腾讯云容器镜像服务配置
+REGISTRY=ccr.ccs.tencentyun.com
+NAMESPACE=your-namespace
 
-**`.env.prod`（生产环境）**
-```bash
+# 镜像标签：develop(测试) / master(生产)
 TAG=master
-DB_HOST=your-tencent-mysql.mysql.tencentcdb.com
+
+# 外部 MySQL 配置
+DB_HOST=your-mysql-host
 DB_PORT=3306
 DB_USER=acore
-DB_PASSWORD=your_prod_password
+DB_PASSWORD=your-password
 ```
 
 ### 7.3 动态配置脚本（docker-entrypoint.sh）
@@ -276,8 +274,7 @@ exec ./worldserver
 
 | 场景 | 命令 |
 |---|---|
-| 测试环境启动 | `docker-compose --env-file .env.test up -d` |
-| 生产环境启动 | `docker-compose --env-file .env.prod up -d` |
+| 启动服务 | `docker-compose --env-file .env up -d` |
 | 查看日志 | `docker-compose logs -f ac-worldserver` |
 | 版本回滚 | 修改 `.env` 中的 `TAG=sha-xxx`，重新执行 `up -d` |
 | 停止服务 | `docker-compose down` |
