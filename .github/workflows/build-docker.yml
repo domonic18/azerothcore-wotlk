@@ -38,6 +38,9 @@ jobs:
           )
           for name in "${!MODULES[@]}"; do
             branch="master"
+            if [ "$name" = "mod-ale" ]; then
+              branch="develop"
+            fi
             git clone --depth=1 --branch "$branch" "${MODULES[$name]}" "modules/$name"
           done
 
