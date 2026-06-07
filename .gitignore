@@ -18,6 +18,7 @@
 !/env/dist/.gitkeep
 /env/user/*
 /.env*
+!.env.example
 /apps/joiner
 /deps/deno
 /data/sql/custom/*
