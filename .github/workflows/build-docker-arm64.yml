@@ -14,7 +14,7 @@ jobs:
     # Native ARM64 runner. Much faster than QEMU for C++ builds.
     # GitHub Docs: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
     # If this runner is unavailable in your org, replace with ubuntu-latest + docker/setup-qemu-action.
-    runs-on: ubuntu-24.04-arm
+    runs-on: self-hosted
     steps:
       - name: Checkout main repo
         uses: actions/checkout@v4
