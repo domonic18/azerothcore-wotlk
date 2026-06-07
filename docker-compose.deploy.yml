@@ -12,6 +12,8 @@ services:
     image: ${REGISTRY}/${NAMESPACE}/azerothcore-server:${TAG:-master}
     container_name: ac-worldserver
     restart: unless-stopped
+    tty: true
+    stdin_open: true
     volumes:
       - ./data:/azerothcore/data
       - ./configs:/azerothcore/env/dist/etc
@@ -31,6 +33,8 @@ services:
     image: ${REGISTRY}/${NAMESPACE}/azerothcore-server:${TAG:-master}
     container_name: ac-authserver
     restart: unless-stopped
+    tty: true
+    stdin_open: true
     volumes:
       - ./configs:/azerothcore/env/dist/etc
       - ./logs:/azerothcore/env/dist/logs

@@ -2,7 +2,7 @@ name: Build and Push Server Image (ARM64)
 
 on:
   push:
-    branches: [master, develop]
+    branches: [develop]
   workflow_dispatch:
 
 env:
