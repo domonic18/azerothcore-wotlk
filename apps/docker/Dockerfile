@@ -186,6 +186,28 @@ VOLUME /azerothcore/env/dist/etc
 
 CMD ["worldserver"]
 
+###########################
+# Unified Server (auth + world)
+###########################
+
+FROM runtime AS server
+
+LABEL description="AzerothCore Server (authserver + worldserver)"
+
+ENV AC_UPDATES_ENABLE_DATABASES=0
+ENV AC_DISABLE_INTERACTIVE=1
+ENV AC_CLOSE_IDLE_CONNECTIONS=0
+
+COPY --chown=$USER_ID:$GROUP_ID \
+     --from=build \
+     /azerothcore/env/dist/bin/authserver /azerothcore/env/dist/bin/authserver
+
+COPY --chown=$USER_ID:$GROUP_ID \
+     --from=build \
+     /azerothcore/env/dist/bin/worldserver /azerothcore/env/dist/bin/worldserver
+
+VOLUME /azerothcore/env/dist/etc
+
 #############
 # DB Import #
 #############

@@ -1,0 +1,46 @@
+name: Build and Push Server Image (ARM64)
+
+on:
+  push:
+    branches: [master, develop]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ccr.ccs.tencentyun.com
+  IMAGE_NAME: azerothcore-server
+
+jobs:
+  build-arm64:
+    # Native ARM64 runner. Much faster than QEMU for C++ builds.
+    # GitHub Docs: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
+    # If this runner is unavailable in your org, replace with ubuntu-latest + docker/setup-qemu-action.
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout main repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Login to Tencent Cloud TCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.TCR_USERNAME }}
+          password: ${{ secrets.TCR_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push (arm64)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/docker/Dockerfile
+          target: server
+          platforms: linux/arm64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ secrets.TCR_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-arm64
+            ${{ env.REGISTRY }}/${{ secrets.TCR_NAMESPACE }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}-arm64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
