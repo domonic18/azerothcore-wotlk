@@ -1,14 +1,14 @@
 /*
  * This file is part of the AzerothCore Project. See AUTHORS file for Copyright information
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Affero General Public License as published by the
- * Free Software Foundation; either version 3 of the License, or (at your
- * option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
  * You should have received a copy of the GNU General Public License along
@@ -401,15 +401,17 @@ public:
                 case EVENT_DETONATE_MANA:
                     {
                         std::vector<Unit*> unitList;
-                        ThreatContainer::StorageType const& threatList = me->GetThreatMgr().GetThreatList();
-                        for (auto itr : threatList)
+                        for (ThreatReference const* ref : me->GetThreatMgr().GetUnsortedThreatList())
                         {
-                            if (itr->getTarget()->IsPlayer()
-                                    && itr->getTarget()->getPowerType() == POWER_MANA
-                                    && itr->getTarget()->GetPower(POWER_MANA))
-                                    {
-                                        unitList.push_back(itr->getTarget());
-                                    }
+                            if (Unit* target = ref->GetVictim())
+                            {
+                                if (target->IsPlayer()
+                                        && target->getPowerType() == POWER_MANA
+                                        && target->GetPower(POWER_MANA))
+                                {
+                                    unitList.push_back(target);
+                                }
+                            }
                         }
                         if (!unitList.empty())
                         {
@@ -678,10 +680,34 @@ class spell_kelthuzad_detonate_mana_aura : public AuraScript
     }
 };
 
+class spell_kelthuzad_void_blast : public SpellScript
+{
+    PrepareSpellScript(spell_kelthuzad_void_blast);
+
+    void HandleAfterHit()
+    {
+        Player* player = GetHitPlayer();
+        if (!player)
+            return;
+
+        if (player->IsAlive())
+            return;
+
+        if (InstanceScript* instance = player->GetInstanceScript())
+            instance->StorePersistentData(PERSISTENT_DATA_IMMORTAL_FAIL, 1);
+    }
+
+    void Register() override
+    {
+        AfterHit += SpellHitFn(spell_kelthuzad_void_blast::HandleAfterHit);
+    }
+};
+
 void AddSC_boss_kelthuzad()
 {
     new boss_kelthuzad();
     new boss_kelthuzad_minion();
     RegisterSpellScript(spell_kelthuzad_frost_blast);
     RegisterSpellScript(spell_kelthuzad_detonate_mana_aura);
+    RegisterSpellScript(spell_kelthuzad_void_blast);
 }

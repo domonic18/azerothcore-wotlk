@@ -1,14 +1,14 @@
 /*
  * This file is part of the AzerothCore Project. See AUTHORS file for Copyright information
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Affero General Public License as published by the
- * Free Software Foundation; either version 3 of the License, or (at your
- * option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
  * You should have received a copy of the GNU General Public License along
@@ -255,7 +255,8 @@ class spell_gluth_decimate : public SpellScript
                 Unit::DealDamage(GetCaster(), cTarget, damage);
                 return;
             }
-            GetCaster()->CastCustomSpell(SPELL_DECIMATE_DAMAGE, SPELLVALUE_BASE_POINT0, damage, unitTarget);
+
+            GetCaster()->CastSpell(unitTarget, SPELL_DECIMATE_DAMAGE, true);
         }
     }
 
@@ -265,8 +266,38 @@ class spell_gluth_decimate : public SpellScript
     }
 };
 
+// 28375 - Decimate
+class spell_gluth_decimate_damage : public SpellScript
+{
+    PrepareSpellScript(spell_gluth_decimate_damage)
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        Unit* target = GetHitUnit();
+        if (!target)
+            return;
+
+        int32 targetHealth = int32(target->GetHealth());
+        int32 fivePctHealth = int32(target->CountPctFromMaxHealth(5));
+
+        // Damage needed to leave the target at exactly 5%
+        int32 damage = targetHealth - fivePctHealth;
+
+        if (damage <= 0)
+            damage = 0;
+
+        SetHitDamage(damage);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_gluth_decimate_damage::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
 void AddSC_boss_gluth()
 {
     new boss_gluth();
     RegisterSpellScript(spell_gluth_decimate);
+    RegisterSpellScript(spell_gluth_decimate_damage);
 }

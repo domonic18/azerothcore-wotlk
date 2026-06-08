@@ -1,14 +1,14 @@
 /*
  * This file is part of the AzerothCore Project. See AUTHORS file for Copyright information
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Affero General Public License as published by the
- * Free Software Foundation; either version 3 of the License, or (at your
- * option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
  * You should have received a copy of the GNU General Public License along
@@ -191,6 +191,7 @@ public:
                     cr->SetDisableGravity(true);
                     cr->GetMotionMaster()->MovePoint(0, 275.4f, -453, 110); // ROOM CENTER
                     events.RescheduleEvent(EVENT_UNFREEZE_MONSTER, 10s);
+                    me->SetImmuneToPC(false);
                     me->SetInCombatWithZone();
                     me->SetControlled(true, UNIT_STATE_STUNNED);
                 }
@@ -276,6 +277,7 @@ public:
                             orb->RemoveAurasDueToSpell(SPELL_AWAKEN_SUBBOSS);
 
                         me->RemoveAurasDueToSpell(SPELL_FREEZE);
+                        me->GetThreatMgr().ResetAllThreat();
                         me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                         me->SetControlled(false, UNIT_STATE_STUNNED);
                         // SETINCOMBATWITHZONE
@@ -372,6 +374,7 @@ public:
             {
                 me->RemoveAurasDueToSpell(SPELL_FREEZE);
                 me->RemoveUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
+                me->SetImmuneToPC(false);
                 me->SetInCombatWithZone();
 
                 events.ScheduleEvent(EVENT_JORMUNGAR_ACID_SPIT, 3s);
@@ -498,6 +501,7 @@ public:
             {
                 me->RemoveAurasDueToSpell(SPELL_FREEZE);
                 me->RemoveUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
+                me->SetImmuneToPC(false);
                 me->SetInCombatWithZone();
 
                 events.ScheduleEvent(EVENT_RHINO_STOMP, 3s);
@@ -608,6 +612,7 @@ public:
             {
                 me->RemoveAurasDueToSpell(SPELL_FREEZE);
                 me->RemoveUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
+                me->SetImmuneToPC(false);
                 me->SetInCombatWithZone();
 
                 events.ScheduleEvent(EVENT_FURBOLG_CHAIN, 3s);
@@ -716,6 +721,7 @@ public:
             {
                 me->RemoveAurasDueToSpell(SPELL_FREEZE);
                 me->RemoveUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
+                me->SetImmuneToPC(false);
                 me->SetInCombatWithZone();
 
                 events.ScheduleEvent(EVENT_WORGEN_MORTAL, 3s);
