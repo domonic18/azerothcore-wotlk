@@ -146,6 +146,11 @@ public:
                 !me->isInFront(who, M_PI / 4.0f) || !me->IsWithinLOSInMap(who))
                 return;
 
+            // 检查高度差，确保玩家在同一平面
+            float heightDiff = std::abs(me->GetPositionZ() - who->GetPositionZ());
+            if (heightDiff > 10.0f)
+                return;
+
             me->SetInCombatWithZone();
             me->SetStandState(UNIT_STAND_STATE_STAND);
 
