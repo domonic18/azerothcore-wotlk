@@ -6,6 +6,10 @@ version: '3.8'
 # 使用方法:
 #   测试环境: docker-compose --env-file .env.test -f docker-compose.deploy.yml up -d
 #   生产环境: docker-compose --env-file .env.prod -f docker-compose.deploy.yml up -d
+#
+# 数据库连接通过环境变量直接传递给 AzerothCore，不写入 .conf 文件。
+# 环境变量名格式: AC_<CONFIG_NAME_UPPER>
+# 在 .env 文件中直接填写完整的连接字符串即可。
 
 services:
   ac-worldserver:
@@ -22,11 +26,9 @@ services:
       - "8085:8085"
     environment:
       - AC_DATA_DIR=/azerothcore/data
-      - AC_DB_HOST=${DB_HOST}
-      - AC_DB_PORT=${DB_PORT:-3306}
-      - AC_DB_USER=${DB_USER}
-      - AC_DB_PASSWORD=${DB_PASSWORD}
-    entrypoint: ["/bin/bash", "/azerothcore/docker-entrypoint.sh"]
+      - AC_LOGINDATABASEINFO
+      - AC_WORLDDATABASEINFO
+      - AC_CHARACTERDATABASEINFO
     command: ["./worldserver"]
 
   ac-authserver:
@@ -41,9 +43,5 @@ services:
     ports:
       - "3724:3724"
     environment:
-      - AC_DB_HOST=${DB_HOST}
-      - AC_DB_PORT=${DB_PORT:-3306}
-      - AC_DB_USER=${DB_USER}
-      - AC_DB_PASSWORD=${DB_PASSWORD}
-    entrypoint: ["/bin/bash", "/azerothcore/docker-entrypoint.sh"]
+      - AC_LOGINDATABASEINFO
     command: ["./authserver"]

@@ -78,10 +78,12 @@ coverage-report/
 .vs
 
 .vscode/*
-!.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Deployment environment files with credentials
+deploy/.env.db-update
 
 #
 # Eclipse
