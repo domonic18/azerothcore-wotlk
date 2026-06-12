@@ -4,11 +4,14 @@ version: '3.8'
 # 使用外部 MySQL 数据库（测试/生产环境均已配置，无需初始化）
 #
 # 使用方法:
-#   测试环境: docker-compose --env-file .env.test -f docker-compose.deploy.yml up -d
-#   生产环境: docker-compose --env-file .env.prod -f docker-compose.deploy.yml up -d
+#   测试环境: docker-compose --env-file .env.test up -d
+#   生产环境: docker-compose --env-file .env.prod up -d
 #
 # 数据库连接通过环境变量直接传递给 AzerothCore，不写入 .conf 文件。
-# 环境变量名格式: AC_<CONFIG_NAME_UPPER>
+# 环境变量名格式: AC_<CONFIG_NAME_UPPER_SNAKE_CASE>
+#   LoginDatabaseInfo     -> AC_LOGIN_DATABASE_INFO
+#   WorldDatabaseInfo     -> AC_WORLD_DATABASE_INFO
+#   CharacterDatabaseInfo -> AC_CHARACTER_DATABASE_INFO
 # 在 .env 文件中直接填写完整的连接字符串即可。
 
 services:
@@ -26,10 +29,10 @@ services:
       - "8085:8085"
     environment:
       - AC_DATA_DIR=/azerothcore/data
-      - AC_LOGINDATABASEINFO
-      - AC_WORLDDATABASEINFO
-      - AC_CHARACTERDATABASEINFO
-    command: ["./worldserver"]
+      - AC_LOGIN_DATABASE_INFO
+      - AC_WORLD_DATABASE_INFO
+      - AC_CHARACTER_DATABASE_INFO
+    command: ["/azerothcore/env/dist/bin/worldserver"]
 
   ac-authserver:
     image: ${REGISTRY}/${NAMESPACE}/azerothcore-server:${TAG:-master}
@@ -43,5 +46,5 @@ services:
     ports:
       - "3724:3724"
     environment:
-      - AC_LOGINDATABASEINFO
-    command: ["./authserver"]
+      - AC_LOGIN_DATABASE_INFO
+    command: ["/azerothcore/env/dist/bin/authserver"]
