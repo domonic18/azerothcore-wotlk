@@ -84,6 +84,7 @@ coverage-report/
 
 # Deployment environment files with credentials
 deploy/.env.db-update
+deploy/.env
 
 #
 # Eclipse
