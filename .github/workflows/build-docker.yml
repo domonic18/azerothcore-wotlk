@@ -33,7 +33,7 @@ jobs:
             ["mod-transmog"]="https://github.com/domonic18/mod-transmog.git"
             ["mod-world-chat"]="https://github.com/domonic18/mod-world-chat.git"
             ["mod-zone-difficulty"]="https://github.com/domonic18/mod-zone-difficulty.git"
-            ["mod-chat-transmitter"]="https://github.com/domonic18/mod-chat-transmitter.git"
+            ["mod-feishu-chat"]="https://github.com/domonic18/mod-feishu-chat.git"
           )
           for name in "${!MODULES[@]}"; do
             branch="develop"
