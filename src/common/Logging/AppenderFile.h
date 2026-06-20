@@ -30,6 +30,7 @@ public:
     AppenderFile(uint8 id, std::string const& name, LogLevel level, AppenderFlags flags, std::vector<std::string_view> const& args);
     ~AppenderFile();
     FILE* OpenFile(std::string const& name, std::string const& mode, bool backup);
+    std::string BuildDateFileName(std::string const& baseName, std::string const& date) const;
     AppenderType getType() const override { return type; }
 
 private:
@@ -37,9 +38,12 @@ private:
     void _write(LogMessage const* message) override;
     FILE* logfile;
     std::string _fileName;
+    std::string _baseFileName;
+    std::string _currentDate;
     std::string _logDir;
     bool _dynamicName;
     bool _backup;
+    bool _useDate;
     uint64 _maxFileSize;
     std::atomic<uint64> _fileSize;
 };
