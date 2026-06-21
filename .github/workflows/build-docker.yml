@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ github.ref_name == 'develop' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout main repo
         uses: actions/checkout@v4
@@ -47,21 +47,8 @@ jobs:
           username: ${{ secrets.TCR_USERNAME }}
           password: ${{ secrets.TCR_PASSWORD }}
 
-      - name: Set up QEMU
-        if: github.ref_name != 'develop'
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Determine target platform
-        id: platform
-        run: |
-          if [ "${{ github.ref_name }}" = "develop" ]; then
-            echo "platform=linux/arm64" >> $GITHUB_OUTPUT
-          else
-            echo "platform=linux/amd64" >> $GITHUB_OUTPUT
-          fi
 
       - name: Set short SHA
         id: sha
@@ -74,7 +61,7 @@ jobs:
           file: ./apps/docker/Dockerfile
           target: server
           push: true
-          platforms: ${{ steps.platform.outputs.platform }}
+          platforms: linux/amd64
           tags: |
             ${{ env.REGISTRY }}/${{ secrets.TCR_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-${{ steps.sha.outputs.short }}
           cache-from: type=gha
