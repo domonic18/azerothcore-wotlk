@@ -55,28 +55,44 @@ echo "Image tag:   $TAG"
 if [ "${SKIP_MODULES:-}" != "1" ]; then
     echo "Cloning modules..."
     mkdir -p modules
-    declare -A MODULES=(
-        ["mod-ale"]="https://github.com/domonic18/mod-ale.git"
-        ["mod-anticheat"]="https://github.com/domonic18/mod-anticheat.git"
-        ["mod-challenge-modes"]="https://github.com/domonic18/mod-challenge-modes.git"
-        ["mod-costumes"]="https://github.com/domonic18/mod-costumes.git"
-        ["mod-keep-out"]="https://github.com/domonic18/mod-keep-out.git"
-        ["mod-multi-client-check"]="https://github.com/domonic18/mod-multi-client-check.git"
-        ["mod-progression-system"]="https://github.com/domonic18/mod-progression-system.git"
-        ["mod-server-auto-shutdown"]="https://github.com/domonic18/mod-server-auto-shutdown.git"
-        ["mod-transmog"]="https://github.com/domonic18/mod-transmog.git"
-        ["mod-world-chat"]="https://github.com/domonic18/mod-world-chat.git"
-        ["mod-zone-difficulty"]="https://github.com/domonic18/mod-zone-difficulty.git"
-        ["mod-feishu-chat"]="https://github.com/domonic18/mod-feishu-chat.git"
+    MODULE_NAMES=(
+        mod-ale
+        mod-anticheat
+        mod-challenge-modes
+        mod-costumes
+        mod-keep-out
+        mod-multi-client-check
+        mod-progression-system
+        mod-server-auto-shutdown
+        mod-transmog
+        mod-world-chat
+        mod-zone-difficulty
+        mod-feishu-chat
     )
-    for name in "${!MODULES[@]}"; do
+    MODULE_URLS=(
+        https://github.com/domonic18/mod-ale.git
+        https://github.com/domonic18/mod-anticheat.git
+        https://github.com/domonic18/mod-challenge-modes.git
+        https://github.com/domonic18/mod-costumes.git
+        https://github.com/domonic18/mod-keep-out.git
+        https://github.com/domonic18/mod-multi-client-check.git
+        https://github.com/domonic18/mod-progression-system.git
+        https://github.com/domonic18/mod-server-auto-shutdown.git
+        https://github.com/domonic18/mod-transmog.git
+        https://github.com/domonic18/mod-world-chat.git
+        https://github.com/domonic18/mod-zone-difficulty.git
+        https://github.com/domonic18/mod-feishu-chat.git
+    )
+    for i in "${!MODULE_NAMES[@]}"; do
+        name="${MODULE_NAMES[$i]}"
+        url="${MODULE_URLS[$i]}"
         target="modules/$name"
         if [ -d "$target" ]; then
             echo "  Removing existing $target"
             rm -rf "$target"
         fi
         echo "  Cloning $name"
-        git clone --depth=1 --branch develop "${MODULES[$name]}" "$target"
+        git clone --depth=1 --branch develop "$url" "$target"
     done
 else
     echo "SKIP_MODULES=1: using existing modules/ directory"
