@@ -1,14 +1,14 @@
 /*
  * This file is part of the AzerothCore Project. See AUTHORS file for Copyright information
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Affero General Public License as published by the
- * Free Software Foundation; either version 3 of the License, or (at your
- * option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
  * You should have received a copy of the GNU General Public License along
@@ -1583,7 +1583,10 @@ uint8 BattlegroundAV::GetAttackString(BG_AV_Nodes node, TeamId teamId)
             strId = AV_TEXT_H_HERALD_SNOWFALL_GRAVEYARD_ATTACK;
         break;
     case BG_AV_NODES_ICEBLOOD_TOWER:
-        strId = AV_TEXT_A_HERALD_ICEBLOOD_TOWER_ATTACK;
+        if (teamId == TEAM_ALLIANCE)
+            strId = AV_TEXT_A_HERALD_ICEBLOOD_TOWER_ATTACK;
+        else
+            strId = AV_TEXT_H_HERALD_ICEBLOOD_TOWER_ATTACK;
         break;
     case BG_AV_NODES_ICEBLOOD_GRAVE:
         if (teamId == TEAM_ALLIANCE)
@@ -1682,7 +1685,10 @@ uint8 BattlegroundAV::GetDefendString(BG_AV_Nodes node, TeamId teamId)
             strId = AV_TEXT_H_HERALD_SNOWFALL_GRAVEYARD_TAKEN;
         break;
     case BG_AV_NODES_ICEBLOOD_TOWER:
-        strId = AV_TEXT_A_HERALD_ICEBLOOD_TOWER_TAKEN;
+        if (teamId == TEAM_ALLIANCE)
+            strId = AV_TEXT_A_HERALD_ICEBLOOD_TOWER_TAKEN;
+        else
+            strId = AV_TEXT_H_HERALD_ICEBLOOD_TOWER_TAKEN;
         break;
     case BG_AV_NODES_ICEBLOOD_GRAVE:
         if (teamId == TEAM_ALLIANCE)

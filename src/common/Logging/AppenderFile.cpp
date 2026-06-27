@@ -1,14 +1,14 @@
 /*
  * This file is part of the AzerothCore Project. See AUTHORS file for Copyright information
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Affero General Public License as published by the
- * Free Software Foundation; either version 3 of the License, or (at your
- * option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
  * You should have received a copy of the GNU General Public License along
@@ -27,7 +27,8 @@ AppenderFile::AppenderFile(uint8 id, std::string const& name, LogLevel level, Ap
     logfile(nullptr),
     _logDir(sLog->GetLogsDir()),
     _maxFileSize(0),
-    _fileSize(0)
+    _fileSize(0),
+    _useDate(false)
 {
     if (args.size() < 4)
     {
@@ -53,6 +54,14 @@ AppenderFile::AppenderFile(uint8 id, std::string const& name, LogLevel level, Ap
         {
             _fileName += sLog->GetLogsTimestamp();
         }
+    }
+
+    if (flags & APPENDER_FLAGS_USE_DATE)
+    {
+        _useDate = true;
+        _baseFileName = _fileName;
+        _currentDate = Acore::Time::TimeToTimestampStr(GetEpochTime(), "%Y-%m-%d");
+        _fileName = BuildDateFileName(_baseFileName, _currentDate);
     }
 
     if (5 < args.size())
@@ -84,6 +93,18 @@ AppenderFile::~AppenderFile()
 void AppenderFile::_write(LogMessage const* message)
 {
     bool exceedMaxSize = _maxFileSize > 0 && (_fileSize.load() + message->Size()) > _maxFileSize;
+
+    if (_useDate && !_dynamicName)
+    {
+        std::string messageDate = Acore::Time::TimeToTimestampStr(message->mtime, "%Y-%m-%d");
+        if (messageDate != _currentDate)
+        {
+            CloseFile();
+            _currentDate = messageDate;
+            _fileName = BuildDateFileName(_baseFileName, _currentDate);
+            logfile = OpenFile(_fileName, "a", false);
+        }
+    }
 
     if (_dynamicName)
     {
@@ -148,4 +169,20 @@ void AppenderFile::CloseFile()
         fclose(logfile);
         logfile = nullptr;
     }
+}
+
+std::string AppenderFile::BuildDateFileName(std::string const& baseName, std::string const& date) const
+{
+    std::string result = baseName;
+    std::size_t dot_pos = result.find_last_of('.');
+    std::string suffix = "_" + date;
+    if (dot_pos != std::string::npos)
+    {
+        result.insert(dot_pos, suffix);
+    }
+    else
+    {
+        result += suffix;
+    }
+    return result;
 }

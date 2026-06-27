@@ -9,7 +9,14 @@ on:
       - synchronize
 
 concurrency:
-  group: ${{ github.head_ref }} || concat(${{ github.ref_name }}, ${{ github.workflow }})
+  # One concurrency group per workflow + ref.
+  #
+  # - PRs use `refs/pull/<PR_NUMBER>/merge`, so new commits cancel older
+  #   in-progress runs for the same PR.
+  # - When a PR is merged, a push to the target branch starts a new group,
+  #   canceling any still-running PR CI.
+  # - Branch pushes are isolated by ref.
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -21,23 +28,63 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }}
     env:
-      BOOST_ROOT: C:\local\boost_1_82_0
+      BOOST_ROOT: C:\local\boost_1_87_0
     if: |
-      github.repository == 'azerothcore/azerothcore-wotlk'
-      && !github.event.pull_request.draft
+      !github.event.pull_request.draft
       && (github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'run-build') || github.event.label.name == 'run-build')
     steps:
       - uses: actions/checkout@v4
+
+      - name: Clone modules
+        if: github.ref == 'refs/heads/master'
+        shell: bash
+        run: |
+          mkdir -p modules
+          declare -A MODULES=(
+            ["mod-ale"]="https://github.com/domonic18/mod-ale.git"
+            ["mod-anticheat"]="https://github.com/domonic18/mod-anticheat.git"
+            ["mod-challenge-modes"]="https://github.com/domonic18/mod-challenge-modes.git"
+            ["mod-costumes"]="https://github.com/domonic18/mod-costumes.git"
+            ["mod-keep-out"]="https://github.com/domonic18/mod-keep-out.git"
+            ["mod-multi-client-check"]="https://github.com/domonic18/mod-multi-client-check.git"
+            ["mod-progression-system"]="https://github.com/domonic18/mod-progression-system.git"
+            ["mod-server-auto-shutdown"]="https://github.com/domonic18/mod-server-auto-shutdown.git"
+            ["mod-transmog"]="https://github.com/domonic18/mod-transmog.git"
+            ["mod-world-chat"]="https://github.com/domonic18/mod-world-chat.git"
+            ["mod-zone-difficulty"]="https://github.com/domonic18/mod-zone-difficulty.git"
+            ["mod-feishu-chat"]="https://github.com/domonic18/mod-feishu-chat.git"
+          )
+          for name in "${!MODULES[@]}"; do
+            branch="develop"
+            git clone --depth=1 --branch "$branch" "${MODULES[$name]}" "modules/$name"
+          done
+
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2.13
+
       - name: Configure OS
         shell: bash
         env:
           CONTINUOUS_INTEGRATION: true
         run: |
           ./acore.sh install-deps
+
       - name: Build
         shell: bash
         run: |
           export CTOOLS_BUILD=all
           ./acore.sh compiler build
+
+      - name: Set short SHA
+        id: sha
+        shell: bash
+        run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Upload Windows binaries
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v4
+        with:
+          name: azerothcore-windows-${{ github.ref_name }}-${{ steps.sha.outputs.short }}
+          path: env/dist/
+          retention-days: 30
+          if-no-files-found: error

@@ -2,6 +2,7 @@
 # AzerothCore
 #
 
+.cache
 /conf/*
 !/conf/dist
 /modules/*
@@ -18,6 +19,7 @@
 !/env/dist/.gitkeep
 /env/user/*
 /.env*
+!.env.example
 /apps/joiner
 /deps/deno
 /data/sql/custom/*
@@ -54,6 +56,13 @@ CMakeLists.txt.user
 *.LOCAL.*
 
 #
+# Claude
+#
+.claude/worktrees
+.claude/settings.local.json
+.claude/plans/**
+
+#
 # IDE & other software
 #
 /.settings/
@@ -69,10 +78,13 @@ coverage-report/
 .vs
 
 .vscode/*
-!.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Deployment environment files with credentials
+deploy/.env.db-update
+deploy/.env
 
 #
 # Eclipse
@@ -90,6 +102,10 @@ local.properties
 .project
 .cproject
 
+# vcpkg integration
+/vcpkg/
+/vcpkg-ports/
+
 
 # ==================
 #
@@ -102,3 +118,6 @@ local.properties
 #  !modules/yourmodule
 #
 # ==================
+
+# Claude Code
+/.claude/
