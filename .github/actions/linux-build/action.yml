@@ -4,38 +4,31 @@ inputs:
   CC:
     default: clang
     description: C Compiler to use
-    type: string
     required: true
   CXX:
     default: clang++
     description: C++ compiler to use
-    type: string
     required: true
   modules:
     default: false
     description: Flag to install modules or not
     required: true
-    type: boolean
   tools:
     default: none
     description: Flag to enable tools build
     required: false
-    type: string
   pch:
     default: false
     description: Flag to enable or disable PCH
     required: false
-    type: boolean
   maxerrors:
     default: 1
     description: Max allowed error count before compilation stops
     required: false
-    type: number
   keepgoing:
     default: false
     description: Flag to continue build after errors
     required: false
-    type: boolean
 runs:
   using: composite
   steps:
