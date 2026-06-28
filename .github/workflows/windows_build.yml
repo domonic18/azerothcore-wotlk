@@ -78,7 +78,7 @@ jobs:
       - name: Set short SHA
         id: sha
         shell: bash
-        run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: echo "short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Upload Windows binaries
         if: github.ref == 'refs/heads/master'

@@ -3,16 +3,13 @@ description: a helper action to shorten generating docker tags and building
 inputs:
   component-name:
     description: name of the component/docker image (eg worldserver, authserver)
-    type: string
     required: true
   push:
     description: whether to push the image or not
-    type: boolean
     required: true
   version:
     description: version tag to use for docker image
     required: true
-    type: string
   dockerfile:
     description: dockerfile to use
     required: false
