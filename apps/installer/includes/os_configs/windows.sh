@@ -30,4 +30,4 @@ fi
 choco install -y --skip-checksums "${INSTALL_ARGS[@]}"  cmake.install -y --installargs 'ADD_CMAKE_TO_PATH=System'
 choco install -y --skip-checksums "${INSTALL_ARGS[@]}"  openssl --force --version=4.0.1
 choco install -y --skip-checksums "${INSTALL_ARGS[@]}"  boost-msvc-14.3 --force --version=1.87.0
-choco install -y --skip-checksums "${INSTALL_ARGS[@]}"  mysql --force --version=8.4.6
+choco install -y --skip-checksums "${INSTALL_ARGS[@]}"  mysql --force --version=9.0.1
