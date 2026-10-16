@@ -46,7 +46,7 @@ jobs:
           username: ${{ secrets.TCR_USERNAME }}
           password: ${{ secrets.TCR_PASSWORD }}
 
-      # 本机持久 builder（buildkitd 配国内 docker.io 镜像源 + 本地缓存跨 job 持久，见 ~/actions-runner/buildkitd.toml）
+      # 本机持久 builder（buildkitd 配国内 docker.io 镜像源 + 本地缓存跨 job 持久，见 ~/Workspace/actions-runner/buildkitd.toml）
       - name: Select builder
         run: docker buildx use ci-builder
 
